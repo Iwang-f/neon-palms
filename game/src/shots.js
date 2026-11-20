@@ -167,7 +167,14 @@ export function stageShot(G, name) {
       { x: 5, z: -44, h: Math.PI }, { x: -5, z: -74, h: 0 },
     ]);
     G.police.setWanted(5);
-    unitsBehind(G, -5, 40, Math.PI, 4);
+    // Three cruisers stacked between the camera and the Mantarraya, one more
+    // turning in behind: the pack has to fill the frame, not sit off it.
+    const pack = [[-9.5, 52], [1.5, 47], [-9.5, 42], [1.5, 37]];
+    for (const [x, z] of pack) {
+      const u = G.police.spawnUnit(x, z, Math.PI);
+      u.car.sirenOn = true;
+      u.car.speed = 18;
+    }
     G.police.heli.activate(-5, 40);
     G.police.heli.pos.set(26, 22, 4);
     G.effects.smoke(car.pos.x, 0.4, car.pos.z + 2, 12, undefined, 2.6);
