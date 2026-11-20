@@ -3,17 +3,139 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Block Dodger</title>
-<style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #11141b; }
-  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
-  /* Read aloud, never shown: the status line screen readers announce. */
-  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-</style>
+<title>NEON PALMS — Palma Sol crime story</title>
+<link rel="stylesheet" href="./style.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
 </head>
 <body>
-<canvas id="game" aria-label="Block Dodger: move the paddle left and right to dodge falling blocks and catch coins"></canvas>
-<p id="status" role="status" aria-live="polite"></p>
+<div id="app">
+  <canvas id="view"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <section class="panel mission" id="mission-card">
+        <div class="mission-head"><span class="tag" id="mission-tag">JOB</span><span class="stage" id="mission-stage">1/1</span></div>
+        <h2 id="mission-title">The Long Way Home</h2>
+        <p id="mission-objective">Reach the marina</p>
+        <div class="bar"><i id="mission-progress"></i></div>
+        <div class="mission-foot">
+          <span id="mission-timer">00:00</span>
+          <span class="foot-label">TO GOAL</span>
+          <span id="mission-distance">0 m</span>
+        </div>
+      </section>
+
+      <section class="wanted" id="wanted">
+        <div class="stars" id="stars"></div>
+        <div class="wanted-label" id="wanted-label">CLEAR</div>
+      </section>
+
+      <section class="panel status" id="status">
+        <div class="status-row"><span class="clock" id="clock">18:33</span><span class="district" id="district">OCEAN DRIVE</span></div>
+        <div class="status-row cash"><span>CASH</span><strong id="cash">$0</strong></div>
+        <div class="status-row"><span>WEAPON</span><strong id="weapon">UNARMED</strong></div>
+        <div class="respect"><span>RESPECT</span><div class="bar slim"><i id="respect-bar"></i></div></div>
+      </section>
+    </div>
+
+    <section class="panel scanner" id="scanner">
+      <header><span>PSD RESPONSE</span><em id="scanner-units">NO UNITS</em></header>
+      <ul id="scanner-list"></ul>
+    </section>
+
+    <div class="hud-bottom">
+      <div class="left-stack">
+        <div class="minimap-wrap">
+          <canvas id="minimap" width="232" height="232"></canvas>
+          <div class="minimap-ring"></div>
+          <span class="mm-n">N</span><span class="mm-e">E</span><span class="mm-s">S</span><span class="mm-w">W</span>
+          <span class="mm-zone" id="mm-zone">PALMA SOL</span>
+        </div>
+        <div class="panel vitals">
+          <div class="vital"><span>HEALTH</span><div class="bar"><i id="health-bar"></i></div><em id="health-num">100</em></div>
+          <div class="vital armor"><span>ARMOR</span><div class="bar"><i id="armor-bar"></i></div><em id="armor-num">0</em></div>
+        </div>
+      </div>
+
+      <div class="dialogue hidden" id="dialogue">
+        <canvas id="portrait" width="96" height="96"></canvas>
+        <div class="dialogue-body">
+          <span class="speaker" id="dialogue-speaker">DALIA MÁRQUEZ</span>
+          <p id="dialogue-text"></p>
+        </div>
+      </div>
+
+      <div class="panel vehicle" id="vehicle-panel">
+        <div class="speed"><strong id="speed">0</strong><span>KM/H</span><em id="gear">N</em></div>
+        <div class="vehicle-meta">
+          <span id="vehicle-name">ON FOOT</span>
+          <div class="bar slim"><i id="condition-bar"></i></div>
+          <div class="radio"><span>RADIO</span><strong id="radio-station">WAVE 103.5</strong><em id="radio-track">Midnight Marina</em></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="crosshair hidden" id="crosshair"><i></i><i></i><i></i><i></i></div>
+    <div class="toasts" id="toasts"></div>
+    <div class="hint" id="hint">E ENTER · CLICK FIRE · TAB MAP</div>
+  </div>
+
+  <div id="title" class="screen">
+    <div class="title-inner">
+      <p class="kicker">PALMA SOL · A CRIME STORY</p>
+      <h1><span>NEON</span> <em>PALMS</em></h1>
+      <p class="tagline">Sun, sand and someone else's money.</p>
+      <nav class="menu">
+        <button id="btn-continue" class="menu-item" disabled>CONTINUE</button>
+        <button id="btn-new" class="menu-item primary">NEW STORY</button>
+        <button id="btn-missions" class="menu-item">MISSIONS</button>
+      </nav>
+      <div class="controls">
+        <div><b>WASD</b> move / drive</div>
+        <div><b>MOUSE</b> look / aim</div>
+        <div><b>CLICK</b> fire</div>
+        <div><b>E</b> enter / exit vehicle</div>
+        <div><b>SHIFT</b> sprint / handbrake</div>
+        <div><b>R</b> radio · <b>TAB</b> map · <b>ESC</b> pause</div>
+      </div>
+      <p class="credit">An original city, story and soundtrack. No borrowed assets.</p>
+    </div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <div class="pause-inner">
+      <h2>PAUSED</h2>
+      <div class="pause-grid" id="pause-grid"></div>
+      <nav class="menu">
+        <button id="btn-resume" class="menu-item primary">RESUME</button>
+        <button id="btn-save" class="menu-item">SAVE GAME</button>
+        <button id="btn-quit" class="menu-item">QUIT TO TITLE</button>
+      </nav>
+    </div>
+  </div>
+
+  <div id="overlay" class="screen hidden">
+    <div class="overlay-inner">
+      <h2 id="overlay-title">WASTED</h2>
+      <p id="overlay-sub">The city wins this round.</p>
+      <div class="overlay-stats" id="overlay-stats"></div>
+      <nav class="menu">
+        <button id="btn-retry" class="menu-item primary">TRY AGAIN</button>
+        <button id="btn-hospital" class="menu-item">HOSPITAL</button>
+      </nav>
+    </div>
+  </div>
+
+  <div id="loading" class="screen">
+    <div class="load-inner">
+      <h1><span>NEON</span> <em>PALMS</em></h1>
+      <div class="bar"><i id="load-bar"></i></div>
+      <p id="load-text">Building Palma Sol…</p>
+    </div>
+  </div>
+</div>
 <script type="module" src="./src/main.js"></script>
 </body>
 </html>

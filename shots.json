@@ -1,5 +1,6 @@
 [
-  { "name": "1-start.jpg", "query": "?shot=start&seed=1" },
-  { "name": "2-play.jpg", "query": "?shot=play&seed=1" },
-  { "name": "3-end.jpg", "query": "?shot=end&seed=1" }
+  { "name": "1-cover.jpg", "query": "?shot=cover", "note": "Pursuit on Ocean Drive at dusk: the Pelicano GT, four PSD cruisers, the air unit and the full HUD." },
+  { "name": "2-onfoot.jpg", "query": "?shot=onfoot", "note": "On foot at 19:09 holding a corner in The Quiet Room, pistol out, officers deploying behind their cruisers." },
+  { "name": "3-pursuit.jpg", "query": "?shot=chase", "note": "Night pursuit in Centro at five stars: the Mantarraya, a smoking engine, the pack closing." },
+  { "name": "4-heist.jpg", "query": "?shot=heist", "note": "Last Call: the lobby hold at 21:24, four stars, tracers across the crosswalk under the tower." }
 ]
