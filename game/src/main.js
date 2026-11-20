@@ -66,6 +66,7 @@ G.vehicles.refresh();
 
 function newGame() {
   G.audio.start();
+  G.player.mesh.visible = true;
   G.menu.hideTitle();
   G.hud.show();
   G.state.mode = 'play';
@@ -78,6 +79,7 @@ function newGame() {
 function continueGame() {
   if (!G.save.load()) return newGame();
   G.audio.start();
+  G.player.mesh.visible = true;
   G.menu.hideTitle();
   G.hud.show();
   G.state.mode = 'play';
@@ -94,6 +96,10 @@ function pause(on) {
 
 function toTitle() {
   G.state.mode = 'title';
+  // The title plate is a city shot: Rafa standing in the middle of the road and
+  // his job beacon both read as debug leftovers behind the menu.
+  G.player.mesh.visible = false;
+  G.missions.clearStageObjects?.();
   G.menu.hidePause();
   G.menu.hideOverlay();
   G.menu.showTitle();
@@ -358,6 +364,8 @@ G.spawnCar = spawnCar;
 document.getElementById('loading').classList.add('hidden');
 G.menu.showTitle();
 G.hud.hide();
+// Behind the title plate the city is the subject, not Rafa standing in the road.
+G.player.mesh.visible = false;
 G.state.ready = true;
 requestAnimationFrame(loop);
 
